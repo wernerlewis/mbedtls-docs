@@ -49,7 +49,18 @@ If adding a new script, files will not automatically be generated when building 
 
 ### Built in test generation
 
-The test framework is currently used for bignum testing, in `tests/scripts/generate_bignum_tests.py`. This script is automatically ran as part of the `generated_files` target, and the tests will be generated with both `make` and `CMake`. This file may be expanded with new tests.
+When adding a new script to the build system, it is generally helpful to look at the implementation for `generate_bignum_tests.py`. This will show where changes are needed and how targets/commands should be added.
+
+The following changes are required:
+ - Windows: Add script to `/scripts/make_generated_files.bat`.
+ - Checks: Add script to `/tests/scripts/check-generated-files.sh`.
+ - Make: Add targets `GENERATED_XYZ_DATA_FILES` and  to `tests/Makefile`, and append to `GENERATED_FILES`.
+ - Make: Add target `generated_xyz_test_data` to `tests/Makefile`, with required dependencies. `GENERATED_XYZ_DATA_FILES` will depend on this target.
+ - CMake: Add `execute_process` for the script with `--list-for-cmake`
+ - CMake: Append files to `xyz_generated_data_files`.
+ - CMake: Add custom command to run the script.
+ - CMake: Add `test_suite_xyz_generated_data` target.
+ - CMake: Update `dependency` to be set correctly for generated data files in the new script.
 
 ## Creating a new test script
 
